@@ -1,0 +1,21 @@
+Reference: https://mahendranp.medium.com/configure-github-openid-connect-oidc-provider-in-aws-b7af1bca97dd
+{
+ "Version": "2012-10-17",
+ "Statement": [
+  {
+   "Effect": "Allow",
+   "Principal": {
+    "Federated": "arn:aws:iam::857378965163:oidc-provider/token.actions.githubusercontent.com"
+   },
+   "Action": "sts:AssumeRoleWithWebIdentity",
+   "Condition": {
+    "StringEquals": {
+     "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
+    },
+    "StringLike": {
+     "token.actions.githubusercontent.com:sub": [ "repo:gvenunes/*", "repo:allifhenrique/*" ]
+    }
+   }
+  }
+ ]
+}
