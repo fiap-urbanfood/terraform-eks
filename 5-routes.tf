@@ -2,12 +2,13 @@
 # ============ config route table private ============
 
 resource "aws_route_table" "eks-route-table-private" {
-  vpc_id = aws_vpc.eks-vpc.id
+
+  vpc_id = "${aws_vpc.eks-vpc.id}"
 
   route {
-      cidr_block     = "0.0.0.0/0"
-      nat_gateway_id = aws_nat_gateway.nat-gateway.id
-    }
+    cidr_block = "0.0.0.0/0"
+    nat_gateway_id = "${aws_nat_gateway.nat-gateway.id}"
+  }
 
   tags = merge(tomap({
             Name = "eks-route-table-private"}),
@@ -18,6 +19,7 @@ resource "aws_route_table" "eks-route-table-private" {
 # ============ config route table public ============
 
 resource "aws_route_table" "eks-route-table-public" {
+
   vpc_id = "${aws_vpc.eks-vpc.id}"
 
   route {
