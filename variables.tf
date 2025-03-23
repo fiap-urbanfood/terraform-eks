@@ -1,9 +1,11 @@
 locals {
   account_id  = "857378965163"
+  vpc_cidr = "10.82.0.0/20"
   # Tags comuns para todos os recursos
   common_tags = {
     project = "urbanfood"
-    deploy  = "terraform"
+    deploy  = "terraform-eks"
+    github  = "github.com/fiap-urbanfood"
   }
 }
 
@@ -13,59 +15,16 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
-variable "aws_profile" {
-  description = "profile utilizado no deploy"
+variable "vpc_name" {
+  description = "Nome da VPC"
   type        = string
-  default     = "terraform-iac"
+  default     = "vpc-urbanfood"
 }
 
 variable "cluster_name" {
   description = "Nome do cluster EKS"
   type        = string
-  default     = "eks-urbanfood"
-}
-
-variable "namespace" {
-  description = "Nome do namespace"
-  type        = string
-  default     = "urban-food"
-}
-
-variable "instance_type" {
-  description = "Tipo de instancia usada no EKS"
-  type        = string
-  default     = "t3a.micro"
-}
-
-variable "list_instance_type" {
-  description = "Tipo de instancia usada no EKS"
-  type        = list(string)
-  default     = ["t3a.micro", "t3a.medium"]
-}
-
-variable "vpc_cidr" {
-  description = "CIDR IPv4 VPC"
-  default = "10.82.0.0/20"
-}
-
-variable "subnet_public-us-east-1a" {
-  description = "CIDR public subnet us-east-1a"
-  default = "10.82.0.0/24"
-}
-
-variable "subnet_public-us-east-1b" {
-  description = "CIDR public subnet us-east-1b"
-  default = "10.82.1.0/24"
-}
-
-variable "subnet_private-us-east-1a" {
-  description = "CIDR private subnet us-east-1a"
-  default = "10.82.8.0/24"
-}
-
-variable "subnet_private-us-east-1b" {
-  description = "CIDR private subnet us-east-1b"
-  default = "10.82.9.0/24"
+  default     = "k8s-urbanfood"
 }
 
 variable "ecr_name" {
@@ -85,13 +44,3 @@ variable "encrypt_type" {
   type        = string
   default     = "KMS"
 }
-
-variable "storage_sizes" {
-  type = map
-  default = {
-    "1xCPU-1GB" = "25"
-    "1xCPU-2GB" = "50"
-    "2xCPU-4GB" = "80"
-  }
-}
-

@@ -5,10 +5,10 @@ resource "aws_security_group" "public_eks" {
   name = "SecGroup Public Cluster EKS"
   description = "eks internet access"
 
-  vpc_id="${aws_vpc.eks-vpc.id}"
+  vpc_id = module.vpc.vpc_id
 
   tags = merge(tomap({
-            Name = "sg-public-eks"}),
+            Name = "sg-public-k8s"}),
             local.common_tags,
          )
 }
@@ -46,10 +46,10 @@ resource "aws_security_group_rule" "public_in_https" {
 resource "aws_security_group" "private_eks" {
   name = "SecGroup Private Cluster EKS"  
   description = "Private internet access"
-  vpc_id="${aws_vpc.eks-vpc.id}"
+  vpc_id = module.vpc.vpc_id
  
   tags = merge(tomap({
-            Name = "sg-private-eks"}),
+            Name = "sg-private-k8s"}),
             local.common_tags,
          )  
 }
@@ -65,11 +65,11 @@ resource "aws_security_group_rule" "private_out" {
 }
  
 resource "aws_security_group_rule" "private_in" {
-  type              = "ingress"
-  from_port         = 0
-  to_port           = 65535
-  protocol          = "-1"
-  cidr_blocks = [aws_vpc.eks-vpc.cidr_block]
+  type        = "ingress"
+  from_port   = 0
+  to_port     = 65535
+  protocol    = "-1"
+  cidr_blocks = [local.vpc_cidr]
  
   security_group_id = aws_security_group.private_eks.id
 }

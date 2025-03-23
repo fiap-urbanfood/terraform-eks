@@ -14,7 +14,7 @@ aws --version
 
 1.3 Fazendo configuração do novo Profile
 ``` bash
-aws configure --profile "giovane-devops"
+aws configure --profile "terraform-iac"
 ```
 
 1.4 Visualizando Credenciais configuradas
@@ -38,10 +38,14 @@ sudo apt update && sudo apt install terraform
 
 2.2 Verifica a versão do terraform
 ``` bash
-gvenunes@gvenunes:~/terraform-fiap$ terraform -version
+gvenunes@gvenunes:~/fiap/terraform-eks$ terraform -version
 Terraform v1.11.2
 on linux_amd64
 + provider registry.terraform.io/hashicorp/aws v5.90.1
++ provider registry.terraform.io/hashicorp/cloudinit v2.3.6
++ provider registry.terraform.io/hashicorp/null v3.2.3
++ provider registry.terraform.io/hashicorp/random v3.6.3
++ provider registry.terraform.io/hashicorp/time v0.13.0
 + provider registry.terraform.io/hashicorp/tls v4.0.6
 ```
 
@@ -78,7 +82,19 @@ terraform apply -auto-approve
 terraform destroy
 ```
 
-## Anotações: 💻
+## 3. Iniciar a configuração do kubectl
+
+3.1 Configurar o acesso ao cluster
+``` bash
+aws eks update-kubeconfig --region us-east-1 --name k8s-urbanfood --profile terraform-iac
+```
+
+3.2 Acessando o namespace, "Após já ter sido criado"
+``` bash
+kubectl config set-context --current --namespace=urbanfood
+```
+
+## Observação: 💻
 
 Sobre o arquivo terraform.tfstate
 
@@ -86,10 +102,11 @@ Sobre o arquivo terraform.tfstate
  - Muito importante para se utilizar com muitas pessoas, pois quando alguém precisa adicionar/atualizar ou remover algo,
  - antes de qualquer operação, o Terraform faz uma atualização para atualizar o estado com a infraestrutura real.
 
- - Pode ser definido no arquivo root (0-provider.tf)
- - Existe a possibilidade de salvar o arquivo de estado ".tfstate" direto no S3
+ - Pode ser definido no arquivo root (main.tf)
+ - Neste projeto foi configurado para aalvar o arquivo de estado ".tfstate" direto no S3
+ - Assim na automação pelo github ele não perde seu estado e se mantem sincronizado.
 
-#### Exemplo de como salvar o tfstate em um bucket no S3
+#### Exemplo de configuração do tfstate salvando em um bucket no S3.
 ```
 terraform {
   backend "s3" {
