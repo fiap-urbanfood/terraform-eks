@@ -19,3 +19,87 @@ Reference: https://mahendranp.medium.com/configure-github-openid-connect-oidc-pr
   }
  ]
 }
+
+GitHubActionsDeploy
+
+# Com esta política, você concederá apenas as permissões necessárias para implantar um pod no EKS.
+
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ecr:GetAuthorizationToken",
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:BatchGetImage",
+        "ecr:PutImage",
+        "ecr:InitiateLayerUpload",
+        "ecr:UploadLayerPart",
+        "ecr:CompleteLayerUpload"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "secretsmanager:GetSecretValue"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "eks:DescribeCluster",
+        "eks:ListClusters",
+        "eks:DescribeNodegroup",
+        "eks:DescribeFargateProfile",
+        "ec2:DescribeSubnets",
+        "ec2:DescribeRouteTables",
+        "ec2:DescribeSecurityGroups"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+
+kubectl edit -n kube-system configmap/aws-auth.
+
+  mapUsers: |
+    - userarn: arn:aws:iam::***:user/github-actions
+      username: github-actions
+      groups:
+        - system:masters
+        
+kubectl edit -n kube-system configmap/aws-auth
+
+apiVersion: v1
+data:
+  mapRoles: |
+    - rolearn: arn:aws:iam::857378965163:role/github-actions
+      username: github-actions
+      groups:
+       - system:bootstrappers
+       - system:nodes
+       - system:masters
+    - groups:
+      - system:bootstrappers
+      - system:nodes
+      rolearn: arn:aws:iam::857378965163:role/node-group-1-eks-node-group-20250323141453873000000003
+      username: system:node:{{EC2PrivateDNSName}}
+    - groups:
+      - system:bootstrappers
+      - system:nodes
+      rolearn: arn:aws:iam::857378965163:role/node-group-2-eks-node-group-20250323141453872700000002
+      username: system:node:{{EC2PrivateDNSName}}
+  mapUsers: |
+    - userarn: arn:aws:iam::***:user/github-actions
+      username: github-actions
+      groups:
+        - system:masters
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2025-03-23T14:26:19Z"
+  name: aws-auth
+  namespace: kube-system
