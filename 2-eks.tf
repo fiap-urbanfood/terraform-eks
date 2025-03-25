@@ -42,34 +42,59 @@ module "eks" {
   }
 
   access_entries = {
-    github_actions = {
-      kubernetes_group = ["system:masters"]
-      principal_arn     = "arn:aws:iam::857378965163:role/github-actions"
+    devops = {
+      principal_arn = "arn:aws:iam::857378965163:user/giovane"
 
       policy_associations = {
         admin = {
           policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
           access_scope = {
-            namespaces = []
+            type = "cluster"
+          }
+        }
+      }
+    }
+    terraform = {
+      principal_arn = "arn:aws:iam::857378965163:user/terraform-iac"
+
+      policy_associations = {
+        admin = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = {
             type       = "cluster"
           }
         }
       }
     }
-    devops = {
-      kubernetes_group = ["system:masters"]
-      principal_arn     = "arn:aws:iam::857378965163:user/giovane"
+    github_actions = {
+      principal_arn = "arn:aws:iam::857378965163:role/github-actions"
 
       policy_associations = {
         admin = {
           policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
           access_scope = {
-            namespaces = []
-            type       = "cluster"
+            type = "cluster"
           }
         }
       }
     }    
+    dev1 = {
+      principal_arn = "arn:aws:iam::857378965163:user/henrrique"
+
+      policy_associations = {
+        devel = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
+          access_scope = {
+            namespaces = ["urbanfood"]
+            type       = "namespace"
+          }
+        }
+      }
+    }
+    managed-node-role = {
+      principal_arn = "arn:aws:iam::857378965163:user/giovane"
+      type          = "STANDARD"
+    }               
   }
 
   tags = merge(tomap({
