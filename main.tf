@@ -1,16 +1,25 @@
-provider "aws" {
-  region = "us-east-1"
-  #profile = "terraform-iac"
+locals {
+  aws_region    = "us-east-1"
+  cluster_name  = "k8s-urbanfood"
 }
 
-data "aws_region" "selected" {}
+variable "kubernetes_access_role" {
+  description = "roleArn"
+  type        = string
+  default     = "arn:aws:iam::857378965163:role/github-actions"
+}
+
+provider "aws" {
+  #profile = "terraform-iac"
+  region = local.aws_region
+}
 
 provider "kubernetes" {
   host                   = module.eks.cluster_endpoint
   cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
   exec {
     api_version = "client.authentication.k8s.io/v1beta1"
-    args        = ["eks", "get-token", "--cluster-name", var.cluster_name, "--region", data.aws_region.selected.name]
+    args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_name, "--region", local.aws_region, "--role-arn", var.kubernetes_access_role]
     command     = "aws"
   }
 }
@@ -18,10 +27,10 @@ provider "kubernetes" {
 terraform {
 
   backend "s3" {
-    bucket = "iac-urbanfood-tfstates"
-    key    = "terraform.tfstate"
-    region = "us-east-1"
     #profile = "terraform-iac"
+    bucket  = "iac-urbanfood-tfstates"
+    key     = "terraform.tfstate"
+    region  = "us-east-1"
   }
 
   required_providers {
