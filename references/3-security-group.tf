@@ -9,7 +9,7 @@ resource "aws_security_group" "public_eks" {
 
   tags = merge(tomap({
             Name = "sg-public-k8s"}),
-            local.common_tags,
+            # local.common_tags,
          )
 }
 
@@ -50,7 +50,7 @@ resource "aws_security_group" "private_eks" {
  
   tags = merge(tomap({
             Name = "sg-private-k8s"}),
-            local.common_tags,
+            # local.common_tags,
          )  
 }
  
@@ -69,7 +69,7 @@ resource "aws_security_group_rule" "private_in" {
   from_port   = 0
   to_port     = 65535
   protocol    = "-1"
-  cidr_blocks = [local.vpc_cidr]
+  # cidr_blocks = [local.vpc_cidr]
  
   security_group_id = aws_security_group.private_eks.id
 }
