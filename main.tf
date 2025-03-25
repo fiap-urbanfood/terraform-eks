@@ -1,5 +1,5 @@
 provider "aws" {
-  #profile = "terraform-iac"
+  profile = "terraform-iac"
   region = "us-east-1"
 }
 
@@ -16,7 +16,7 @@ provider "kubernetes" {
 terraform {
 
   backend "s3" {
-    #profile = "terraform-iac"
+    profile = "terraform-iac"
     bucket  = "iac-urbanfood-tfstates"
     key     = "terraform.tfstate"
     region  = "us-east-1"
@@ -25,7 +25,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.90.0"
+      version = "~> 5.0.0"
     }
 
     kubernetes = {
@@ -49,5 +49,5 @@ terraform {
     }
   }
 
-  required_version = "~> 1.11"
+  required_version = "~> 1.5"
 }
