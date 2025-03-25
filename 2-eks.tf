@@ -16,10 +16,10 @@ module "eks" {
       service_account_role_arn = module.irsa-ebs-csi.iam_role_arn
       most_recent = true
     }
-    coredns                = {}
-    eks-pod-identity-agent = {}
-    kube-proxy             = {}
-    vpc-cni                = {}    
+    coredns                = { most_recent = true }
+    kube-proxy             = { most_recent = true }
+    vpc-cni                = { most_recent = true }
+    eks-pod-identity-agent = { most_recent = true }
   }
 
   vpc_id     = module.vpc.vpc_id
@@ -30,7 +30,7 @@ module "eks" {
   }
 
   eks_managed_node_groups = {
-    one = {
+    default = {
       name = "node-group-1"
 
       instance_types = ["m6i.large", "t3.medium"]
@@ -39,17 +39,37 @@ module "eks" {
       max_size     = 3
       desired_size = 2
     }
+  }
 
-    two = {
-      name = "node-group-2"
+  access_entries = {
+    github_actions = {
+      kubernetes_group = ["system:masters"]
+      principal_arn     = "arn:aws:iam::857378965163:role/github-actions"
 
-      instance_types = ["m6i.large", "t3.medium"]
-
-      min_size     = 1
-      max_size     = 2
-      desired_size = 1
+      policy_associations = {
+        admin = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = {
+            namespaces = []
+            type       = "cluster"
+          }
+        }
+      }
     }
+    devops = {
+      kubernetes_group = ["system:masters"]
+      principal_arn     = "arn:aws:iam::857378965163:user/giovane"
 
+      policy_associations = {
+        admin = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = {
+            namespaces = []
+            type       = "cluster"
+          }
+        }
+      }
+    }    
   }
 
   tags = merge(tomap({

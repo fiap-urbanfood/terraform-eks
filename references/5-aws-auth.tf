@@ -1,8 +1,12 @@
+
+# ============ Autorizar o github-actions a fazer deploy no EKS ============
+
 module "eks-aws-auth" {
   source  = "terraform-aws-modules/eks/aws//modules/aws-auth"
   version = "~> 20.0"
 
   manage_aws_auth_configmap = true
+  create_aws_auth_configmap = false
 
   aws_auth_roles = [
     {
