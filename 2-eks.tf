@@ -41,65 +41,47 @@ module "eks" {
     }
   }
 
-  access_entries = {
-    devops = {
-      principal_arn = "arn:aws:iam::857378965163:user/giovane"
-
-      policy_associations = {
-        admin = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-          access_scope = {
-            type = "cluster"
-          }
-        }
-      }
-    }
-    terraform = {
-      principal_arn = "arn:aws:iam::857378965163:user/terraform-iac"
-
-      policy_associations = {
-        admin = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-          access_scope = {
-            type       = "cluster"
-          }
-        }
-      }
-    }
-    github_actions = {
-      principal_arn = "arn:aws:iam::857378965163:role/github-actions"
-
-      policy_associations = {
-        admin = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-          access_scope = {
-            type = "cluster"
-          }
-        }
-      }
-    }    
-    dev1 = {
-      principal_arn = "arn:aws:iam::857378965163:user/henrrique"
-
-      policy_associations = {
-        devel = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
-          access_scope = {
-            namespaces = ["urbanfood"]
-            type       = "namespace"
-          }
-        }
-      }
-    }
-    managed-node-role = {
-      principal_arn = "arn:aws:iam::857378965163:user/giovane"
-      type          = "STANDARD"
-    }               
-  }
-
   tags = merge(tomap({
             Name = "k8s-cluster-urbanfood"}),
             local.common_tags,
          )
   
+}
+
+# ============ Config Acessos ao eks ============
+
+variable "iam_access_entries" {
+  type = list(object({
+    policy_arn     = string
+    principal_arn  = string
+  }))
+
+  default = [
+    {
+      policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+      principal_arn = "arn:aws:iam::857378965163:user/giovane"
+    },
+    {
+      policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy"
+      principal_arn = "arn:aws:iam::857378965163:role/github-actions"
+    },
+  ]
+}
+
+resource "aws_eks_access_entry" "eks_access_entry" {
+  for_each      = { for entry in var.iam_access_entries : entry.principal_arn => entry }
+  cluster_name  = module.eks.cluster_name
+  principal_arn = each.value.principal_arn
+  type          = "STANDARD"
+}
+
+resource "aws_eks_access_policy_association" "eks_policy_association" {
+  for_each      = { for entry in var.iam_access_entries : entry.principal_arn => entry }
+  cluster_name  = module.eks.cluster_name
+  policy_arn    = each.value.policy_arn
+  principal_arn = each.value.principal_arn
+
+  access_scope {
+    type = "cluster"
+  }
 }

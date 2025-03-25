@@ -20,6 +20,24 @@ Reference: https://mahendranp.medium.com/configure-github-openid-connect-oidc-pr
  ]
 }
 
+provider "aws" {
+  profile = "terraform-iac"
+  region = "us-east-1"
+  assume_role {
+    role_arn = "arn:aws:iam::857378965163:role/github-actions"
+  }
+}
+
+backend "s3" {
+  profile = "terraform-iac"
+  bucket  = "iac-urbanfood-tfstates"
+  key     = "terraform.tfstate"
+  region  = "us-east-1"
+  assume_role = {
+    role_arn = "arn:aws:iam::857378965163:role/github-actions"
+  }    
+}
+
 GitHubActionsDeploy
 
 # Com esta política, você concederá apenas as permissões necessárias para implantar um pod no EKS.
