@@ -9,7 +9,7 @@ module "eks" {
   cluster_version = "1.32"
 
   cluster_endpoint_public_access           = true
-  enable_cluster_creator_admin_permissions = true
+  enable_cluster_creator_admin_permissions = false
 
   cluster_addons = {
     aws-ebs-csi-driver = {
@@ -57,6 +57,10 @@ variable "iam_access_entries" {
   }))
 
   default = [
+    {
+      policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+      principal_arn = "arn:aws:iam::857378965163:user/terraform-iac"
+    },
     {
       policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
       principal_arn = "arn:aws:iam::857378965163:user/giovane"
