@@ -63,7 +63,7 @@ variable "iam_access_entries" {
     },
     {
       policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-      principal_arn = "arn:aws:iam::857378965163:user/giovane"
+      principal_arn = "arn:aws:iam::857378965163:user/user01"
     },
     {
       policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy"
