@@ -18,7 +18,7 @@ terraform {
   backend "s3" {
     #profile = "terraform-iac"
     bucket  = "iac-urbanfood-tfstates"
-    key     = "terraform.tfstate"
+    key     = "eks/terraform.tfstate"
     region  = "us-east-1"
   }
 

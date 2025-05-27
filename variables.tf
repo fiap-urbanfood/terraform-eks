@@ -30,7 +30,7 @@ variable "cluster_name" {
 variable "ecr_name" {
   description = "ECR NAME"
   type        = list(string)
-  default     = ["urbanfood/app", "urbanfood/nginx"]
+  default     = ["urbanfood/cliente", "urbanfood/login", "urbanfood/pedidos", "urbanfood/produtos", "urbanfood/nginx"]
 }
 
 variable "image_mutability" {
