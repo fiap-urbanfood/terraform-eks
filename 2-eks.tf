@@ -11,6 +11,10 @@ module "eks" {
   cluster_endpoint_public_access           = true
   enable_cluster_creator_admin_permissions = false
 
+  create_kms_key              = false
+  create_cloudwatch_log_group = false
+  cluster_encryption_config   = {}  
+
   cluster_addons = {
     aws-ebs-csi-driver = {
       service_account_role_arn = module.irsa-ebs-csi.iam_role_arn
@@ -32,8 +36,8 @@ module "eks" {
   eks_managed_node_groups = {
     default = {
       name = "node-group-1"
-
-      instance_types = ["m6i.large", "t3.medium"]
+      ami_type = "AL2_x86_64"
+      instance_types = ["m6i.large", "t3.small"]
 
       min_size     = 1
       max_size     = 3
@@ -89,3 +93,4 @@ resource "aws_eks_access_policy_association" "eks_policy_association" {
     type = "cluster"
   }
 }
+

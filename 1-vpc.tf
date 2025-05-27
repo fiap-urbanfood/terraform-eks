@@ -23,6 +23,9 @@ module "vpc" {
   create_database_subnet_route_table     = true
   create_database_internet_gateway_route = true
 
+  # Colocar para criar o ELB e SecurityGroup Associado ao ELB.
+  # No momento do destroy ele não remove o ELB criado automaticamente pelo EKS, e trava por conta das ENI e o SecurityGroup vinculadas ao ELB.
+
   public_subnet_tags = {
     "kubernetes.io/role/elb" = 1
   }
